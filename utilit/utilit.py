@@ -2,4 +2,10 @@ import numpy as np
 
 class utilit(object):
     def genTestData(self):
-        return [[1,2,3,4,5,6],[2,3,6,7],[3,4,6,8,9,10],[1,2,6,8,9,10],[1,2,4,5,6,7,8,10],[3,11,13]]
+        simpDat = [['r', 'z', 'h', 'j', 'p'],
+                   ['z', 'y', 'x', 'w', 'v', 'u', 't', 's'],
+                   ['z'],
+                   ['r', 'x', 'n', 'o', 's'],
+                   ['y', 'r', 'x', 'z', 'q', 't', 'p'],
+                   ['y', 'z', 'x', 'e', 'q', 's', 't', 'm']]
+        return simpDat
