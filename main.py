@@ -6,6 +6,11 @@ if '__main__' == __name__:
     fpAlg = learn.fpGrowth()
 
     dataSet = tool.genTestData()
-    fpTree, header = fpAlg.genFpTree(dataSet, 2)
+    minSup = 2
+    fpTree, header = fpAlg.genFpTree(dataSet, minSup)
     print(header)
     print(fpTree)
+
+    support = fpAlg.calcSupport(fpTree, header, minSup)
+
+    print(support)

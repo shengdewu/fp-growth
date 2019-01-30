@@ -32,7 +32,7 @@ class fpGrowth(object):
         headTable = {}
         for key, count in elementCount.items():
             if elementCount[key] >= minFreq:
-                headTable[key] = [count,tableLink()]
+                headTable[key] = [count,tableLink()] # 存放的是 key 在数据集中的总数，以及其在树中对应的节点
 
         freqElement = set(headTable.keys())
 
@@ -69,6 +69,51 @@ class fpGrowth(object):
         nodeLink.nodeVal = node
         return
 
-    def calcSupport(self, fpGrowTree, headTable):
+    def huntPrefix(self, nodeLink):
+        pathSet = []
+        #横向搜索
+        while nodeLink.nodeLink != None:
+            #纵向搜索
+            path = []
+            while nodeLink.nodeVal.parent != None: #没有到根节点
+                path.append(nodeLink.nodeVal)
+                nodeLink.nodeVal = nodeLink.nodeVal.parent
+            if len(path) > 1: #只有一项
+                pathSet.append(path)
+            nodeLink = nodeLink.nodeLink
+        return pathSet
+
+    def buildFreqSet(self, pathSet, minSup=2):
+        freqSet = {}
+        for key, pathes in pathSet.items():
+            nodeList = {}
+            for path in pathes:
+                freq = 0
+                for node in path:
+                    #第零个是叶子节点,它的频率决定整个路径的频率
+                    if freq == 0:
+                        freq = node.freq
+                    nodeList[node.name] = nodeList.get(node.name,0) + freq
+
+            #剔除不满足条件的点
+            validNode = {}
+            for key, val in nodeList.items():
+                if val >= minSup:
+                    validNode[key] = val
+            #不仅仅有叶子节点,多条路径有共同节点
+            if len(validNode) > 1:
+            #构建频繁项
+                pass
+
+
+        return
+
+    def calcSupport(self, fpGrowTree, headTable, minSup=2):
+        pathSet = {}
+        for key in headTable.keys():
+            element = headTable[key]
+            path = self.huntPrefix(element[1])
+            if len(path) > 0:
+                pathSet[key] = path
 
         return
