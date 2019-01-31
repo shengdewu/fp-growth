@@ -85,28 +85,60 @@ class fpGrowth(object):
 
     def buildFreqSet(self, pathSet, minSup=2):
         freqSet = {}
-        for key, pathes in pathSet.items():
+        for leaf, pathes in pathSet.items():
             nodeList = {}
+            nodeFreq = 0
             for path in pathes:
                 freq = 0
                 for node in path:
                     #第零个是叶子节点,它的频率决定整个路径的频率
                     if freq == 0:
                         freq = node.freq
+                        nodeFreq += freq
                     nodeList[node.name] = nodeList.get(node.name,0) + freq
 
             #剔除不满足条件的点
-            validNode = {}
+            validNode = []
             for key, val in nodeList.items():
                 if val >= minSup:
-                    validNode[key] = val
+                    validNode.append(key)
             #不仅仅有叶子节点,多条路径有共同节点
-            if len(validNode) > 1:
-            #构建频繁项
-                pass
 
+            if len(validNode) <= 1:
+                continue
+            #构建频繁项 每一项的支持节点必须是叶子
+            # 第零个是支持项,及叶子节点
+            nodeSet = []
+            nodeSet.extend(validNode[1:])
 
-        return
+            nodeTemp = validNode[1:].copy()
+            while len(nodeTemp) > 1:
+                nodeTemp = self.group(nodeTemp)
+                nodeSet.extend(nodeTemp.copy())
+            nodeSet.append(nodeFreq)
+
+            freqSet[leaf] = nodeSet
+        return freqSet
+
+    def group(self, nodeGroup):
+    # A:5--->B:5---->C:3--->D:3
+    #        |----->D:2
+    #这种情况没有考虑到,应该以最小的作为分割条件
+        nodeVal = []
+        length = len(nodeGroup)
+        for i in range(length-1):
+            for j in range(i+1,length, 1):
+                val = set(nodeGroup[i]+nodeGroup[j])
+                length = len(nodeVal)
+                bFind = False
+                if length >= 1:
+                    for k in range(length):
+                        if val == nodeVal[k]:
+                            bFind = True
+                            break
+                if not bFind:
+                    nodeVal.append(list(val))
+        return nodeVal
 
     def calcSupport(self, fpGrowTree, headTable, minSup=2):
         pathSet = {}
@@ -115,5 +147,13 @@ class fpGrowth(object):
             path = self.huntPrefix(element[1])
             if len(path) > 0:
                 pathSet[key] = path
+        freqSet = self.buildFreqSet(pathSet, minSup)
 
-        return
+        #计算支持度
+        for key, support in freqSet.items():
+            den = headTable[key]
+            mem = support[-1]
+            for sup in support[:-1]:
+                #men/den
+                pass
+        return freqSet
